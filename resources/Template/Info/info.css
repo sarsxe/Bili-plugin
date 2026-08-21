@@ -1,0 +1,336 @@
+@font-face {
+    font-family: "LolitaFont";
+    src: url("../../font/萝莉体.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "LolitaFont", sans-serif;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    width: 650px;
+    padding: 18px;
+    transform: scale(2);
+    transform-origin: 0 0;
+    backface-visibility: hidden;
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 
+        0 4px 20px rgba(0, 161, 214, 0.3),
+        0 0 30px rgba(0, 161, 214, 0.2) inset;
+    border: 1px solid rgba(0, 161, 214, 0.3);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+
+.avatar-combo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar-container {
+    position: relative;
+    flex-shrink: 0;
+    margin-bottom: 35px;
+}
+
+.user-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #00a1d6;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(0, 161, 214, 0.5) inset;
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.user-avatar.no-border {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.pendant-img {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 0 10px rgba(0, 161, 214, 0.5));
+}
+
+.user-info {
+    flex: 1;
+    position: relative;
+}
+
+.user-name {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 5px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.user-sign {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    max-width: 400px;
+    margin-right: 15px;
+}
+
+.user-uid {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.vip-box {
+    position: relative;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 161, 214, 0.3);
+    background: rgba(0, 161, 214, 0.15);
+    text-align: center;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 120px;
+}
+
+.vip-box.vip {
+    border-color: #00a1d6;
+    background: rgba(0, 161, 214, 0.25);
+}
+
+.vip-text {
+    font-weight: bold;
+    color: #ef0b7d;
+}
+
+.vip-due {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.pendant-name {
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(45deg, #00a1d6, #00c1ff);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+    width: max-content;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.data-item {
+    background: rgba(0, 161, 214, 0.15);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 161, 214, 0.2);
+}
+
+.data-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 161, 214, 0.3);
+}
+
+.data-value {
+    font-size: 24px;
+    color: #00c1ff;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.data-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+}
+
+.status-container {
+    display: flex;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.status-item {
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(0, 161, 214, 0.2);
+}
+
+.status-item.success {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+}
+
+.status-item.normal {
+    background: rgba(33, 150, 243, 0.15);
+    color: #2196f3;
+}
+
+.status-item.danger {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+}
+
+.exp-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.exp-box {
+    background: rgba(0, 161, 214, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid rgba(0, 161, 214, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.exp-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 8px rgba(0, 161, 214, 0.2);
+}
+
+.exp-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    font-size: 15px;
+}
+
+.exp-item span:first-child {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+}
+
+.exp-value {
+    color: #00c1ff;
+    font-size: 20px;
+}
+
+.task-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.task-item {
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 161, 214, 0.2);
+}
+
+.task-done {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+}
+
+.task-undone {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+}
+
+.footer-info {
+    margin: 25px 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    min-height: 50px;
+    position: relative;
+    border-top: 1px solid rgba(0, 161, 214, 0.3);
+    border-bottom: 1px solid rgba(0, 161, 214, 0.3);
+}
+
+.footer-info::before,
+.footer-info::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 30%;
+    height: 1px;
+    background: rgba(0, 161, 214, 0.3);
+    transform: translateX(-50%);
+}
+
+.footer-info::before {
+    top: -1px;
+}
+
+.footer-info::after {
+    bottom: -1px;
+}
+
+
+.footer-info div {
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.copyright {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    margin-top: 15px;
+    padding-top: 12px;
+    font-weight: 500;
+}
