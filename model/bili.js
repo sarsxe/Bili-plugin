@@ -27,7 +27,6 @@ try {
 
 class Bili {
     constructor() {
-        this.signApi = config.signApi
         this.key = configModule?.qq?.[0] || Bot.uin || ['114514']
         this.clean = this.clean.bind(this)
         this.Update_Plugin = new Update()
@@ -38,19 +37,10 @@ class Bili {
 
     // 获取UP最新信息
     async SubscribeUP(mid) {
-        const UPUrl = `${this.signApi}/space?mid=${mid}`;
         let response
         let data
-        if (config.Enable_SignApi) {
-            response = await fetch(UPUrl, {
-                headers: {
-                    authorization: encodeURIComponent(config.Authorization),
-                }
-            })
-            data = await response.json();
-        } else {
-            data = await BApi.space(mid)
-        }
+        data = await BApi.space(mid)
+
         const live = data.data.live;
         const archive = data.data.archive.item[0]
         const liveItem = {
@@ -87,20 +77,10 @@ class Bili {
             7: '踢出粉丝'
         };
         const actionName = actionMap[act] || '未知操作';
-        const relationUrl = `${this.signApi}/relation?accesskey=${userCookies.access_token}&key=${this.key}&mid=${mid}&act=${act}`;
         try {
-            let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(relationUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })
-                json = await response.json();
-            } else {
-                json = await BApi.relationup(userCookies, mid, act)
-            }
+            json = await BApi.relationup(userCookies, mid, act)
+
             if (json.code === 0) {
                 return `🌸${actionName}成功`;
             } else {
@@ -113,26 +93,7 @@ class Bili {
     }
 
     async getmiyocode(action = 1) {
-        try {
-            const miyocodeUrl = `${this.signApi}/miyocode?num=${action}`;
-            const response = await fetch(miyocodeUrl, {
-                headers: {
-                    authorization: encodeURIComponent(config.Authorization),
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`[Bili-plugin]获取节日信息请求出错: ${response.status}`);
-            }
-            const data = await response.json();
-            return data
-        } catch (err) {
-            logger.error("[Bili-plugin]获取米游社兑换码失败", err);
-            return {
-                retcode: 0,
-                data: [],
-                date: null
-            };
-        }
+        return { retcode: 0, data: [], date: null }
     }
 
     async getSourceMessage(e) {
@@ -179,104 +140,141 @@ class Bili {
     }
 
     async getfestival(num = 5) {
-        const yunshiUrl = `${this.signApi}/jieri?num=${num}`;
-        let message = ["每日节日准时提醒！"];
-
-        try {
-            const response = await fetch(yunshiUrl, {
-                headers: {
-                    authorization: encodeURIComponent(config.Authorization),
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`[Bili-plugin]获取节日信息请求出错: ${response.status}`);
-            }
-            const data = await response.json();
-
-            if (data.code === "0") {
-                message.push(`\r距离周末剩余：${data.weekend.daysToWeekend}天`);
-                data.festivals.forEach(festival => {
-                    const timeParts = [];
-                    if (festival.days > 0) {
-                        timeParts.push(`${festival.days}天`);
-                    }
-                    if (festival.hours > 0) {
-                        timeParts.push(`${festival.hours}小时`);
-                    }
-                    if (festival.minutes > 0) {
-                        timeParts.push(`${festival.minutes}分钟`);
-                    }
-                    if (festival.seconds > 0) {
-                        timeParts.push(`${festival.seconds}秒`);
-                    }
-                    //   const seconds = festival.seconds ?? 0;
-                    //   timeParts.push(`${seconds}秒`);
-                    message.push(`\r🌸『${festival.name}』剩余${timeParts.join('')}！`);
-                });
-            } else {
-                message.push("获取节日信息失败");
-            }
-        } catch (error) {
-            logger.error('[Bili-plugin]获取节日信息请求出错', error);
-            message.push("🌸获取节日信息失败");
-        }
-        return message;
+        return ["每日节日准时提醒！", "节日信息源已下线"]
     }
 
     async getyunshi(uin) {
-        const yunshiUrl = `${this.signApi}/yunshi?uin=${uin}`;
-        const response = await fetch(yunshiUrl, {
-            headers: {
-                authorization: encodeURIComponent(config.Authorization),
-            }
-        });
-        const data = await response.json()
-        if (data.code === 0) {
-            let message = [
-                `『运势』${data.msg.fortuneSummary}`,
-                '\r『星级』' + data.msg.luckyStar,
-                '\r『点评』' + data.msg.signText,
-                '\r『解读』' + data.msg.unsignText
-            ];
-
-            return message;
-        } else {
-            return ['获取运势信息失败。']
-        }
+        return ['运势服务已下线']
     }
 
     async getvideoinfo(url, cookies = config.SESSDATA) {
-        const jxUrl = `${this.signApi}/jx/b_jx?msg=${url}&cookie=SESSDATA=${cookies}`
-        try {
-            const response = await fetch(jxUrl, {
-                headers: {
-                    authorization: encodeURIComponent(config.Authorization),
-                }
-            });
-            const json = await response.json();
-            return json
-        } catch (err) {
-            logger.error("[Bili-plugin]视频解析失败:", err);
-            return null
-        }
+        return await this.localGetVideoInfo(url, cookies);
     }
 
+    async localGetVideoInfo(url, cookies) {
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0',
+            Referer: 'https://www.bilibili.com',
+            Accept: '*/*',
+            'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8'
+        };
+        if (cookies && /^[A-Za-z0-9,._%+\-\/=*]+$/.test(cookies))
+            headers.Cookie = `SESSDATA=${cookies}`;
+
+        const apiGet = async (api) => {
+            const resp = await fetch(api, { headers });
+            const json = await resp.json();
+            if (json.code !== 0) throw new Error(`B站API错误: ${json.code} ${json.message}`);
+            return json.data;
+        };
+
+        let bvid = null;
+        let roomId = null;
+        const directBv = url.match(/BV[0-9A-Za-z]{10}/);
+        const directLive = url.match(/live\.bilibili\.com\/(\d+)/);
+        if (directBv) {
+            bvid = directBv[0];
+        } else if (directLive) {
+            roomId = directLive[1];
+        } else {
+            const resp = await fetch(url, { headers, redirect: 'follow' });
+            const finalUrl = resp.url || url;
+            bvid = finalUrl.match(/BV[0-9A-Za-z]{10}/)?.[0];
+            roomId = finalUrl.match(/live\.bilibili\.com\/(\d+)/)?.[1];
+        }
+
+        if (roomId) return await this.localGetLiveInfo(roomId, headers);
+        if (!bvid) throw new Error('local parse: cannot extract bvid from url: ' + url);
+
+        const viewData = await apiGet(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`);
+        const playData = await apiGet(`https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${viewData.cid}&qn=64&platform=html5&high_quality=1`);
+
+        let online = { total: '0人在看', count: '0人正在看' };
+        try {
+            const od = await apiGet(`https://api.bilibili.com/x/player/online/total?bvid=${bvid}&cid=${viewData.cid}`);
+            online = { total: `${od.total}人在看`, count: `${od.count}人正在看` };
+        } catch (e) {}
+
+        const fmtLen = (sec) => {
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        };
+
+        return {
+            type: 'video',
+            data: {
+                pic: viewData.pic,
+                title: viewData.title,
+                desc: viewData.desc,
+                authorName: viewData.owner.name,
+                mid: viewData.owner.mid,
+                tname: viewData.tname || '视频',
+                tname_v2: viewData.tname_v2 || '',
+                stat: {
+                    like: viewData.stat.like,
+                    share: viewData.stat.share,
+                    favorite: viewData.stat.favorite,
+                    coin: viewData.stat.coin,
+                    reply: viewData.stat.reply,
+                    view: viewData.stat.view,
+                    danmaku: viewData.stat.danmaku
+                },
+                length: fmtLen(viewData.duration),
+                time: moment.unix(viewData.pubdate).format('YYYY-MM-DD HH:mm:ss'),
+                online,
+                size: playData.durl?.[0]?.size ?? 0,
+                videoUrl: playData.durl?.[0]?.url ?? ''
+            }
+        };
+    }
+
+    async localGetLiveInfo(roomId, headers) {
+        const apiGet = async (api) => {
+            const resp = await fetch(api, { headers });
+            const json = await resp.json();
+            if (json.code !== 0) throw new Error(`B站直播API错误: ${json.code} ${json.message}`);
+            return json.data;
+        };
+
+        const info = await apiGet(`https://api.live.bilibili.com/room/v1/Room/get_info?room_id=${roomId}`);
+        const anchor = await apiGet(`https://api.live.bilibili.com/live_user/v1/UserInfo/get_anchor_in_room?roomid=${roomId}`).catch(() => null);
+        const play = await apiGet(`https://api.live.bilibili.com/room/v1/Room/playUrl?cid=${roomId}&quality=0&platform=web`).catch(() => null);
+
+        let danmu = [];
+        try {
+            const dm = await apiGet(`https://api.live.bilibili.com/xlive/web-room/v1/dM/gethistory?roomid=${roomId}`);
+            danmu = (dm.room || []).slice(0, 10).map(d2 => ({
+                nickname: d2.nickname,
+                text: d2.text,
+                face: '',
+                isadmin: false,
+                time: d2.timeline || ''
+            }));
+        } catch (e) {}
+
+        return {
+            type: 'live',
+            data: {
+                cover: info.cover || info.keyframe || '',
+                title: info.title,
+                uid: info.uid,
+                roomid: roomId,
+                area_name: info.area_name || '',
+                live_status: info.live_status === 1 ? '正在直播' : '未开播',
+                live_time: info.live_time || '未开播',
+                hot_words: [anchor?.info?.uname ? `主播: ${anchor.info.uname}` : `房间号: ${roomId}`],
+                Url: play?.durl?.[0]?.url ?? '',
+                danmu
+            }
+        };
+    }
 
     async liveshare(userCookies, roomid) {
-        const jxUrl = `${this.signApi}/liveshare?accesskey=${userCookies.access_token}&key=${this.key}&roomid=${roomid}`;
         try {
-            let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(jxUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.liveshare(userCookies, roomid)
-            }
+            json = await BApi.liveshare(userCookies, roomid)
+
             return json.code === 0 ? `🌸分享直播间${roomid}成功` : `🌸分享直播间${roomid}失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-plugin]视频解析失败:", err);
@@ -289,20 +287,10 @@ class Bili {
         let failTotal = 0;
         const errorMessages = new Set();
         const sendClickRequest = async (batchClick) => {
-            const liveclickUrl = `${this.signApi}/livelike?accesskey=${userCookies.access_token}&key=${this.key}&roomid=${roomid}&upid=${upid}&uid=${userCookies.DedeUserID}&click=${batchClick}`;
             try {
-                let response
                 let json
-                if (config.Enable_SignApi) {
-                    response = await fetch(liveclickUrl, {
-                        headers: {
-                            authorization: encodeURIComponent(config.Authorization),
-                        }
-                    });
-                    json = await response.json();
-                } else {
-                    json = await BApi.liveclick(userCookies, roomid, upid, click)
-                }
+                json = await BApi.liveclick(userCookies, roomid, upid, click)
+
 
                 if (json.code === 0) {
                     return {
@@ -352,20 +340,11 @@ class Bili {
 
     async likevideo(userCookies, aid, action) {
         // action：0喜欢，1不喜欢
-        const likeUrl = `${this.signApi}/like?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&like=${action}`
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(likeUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.likevideo(userCookies, aid, action)
-            }
+            json = await BApi.likevideo(userCookies, aid, action)
+
             const reply = action === 0 ? '点赞' : '取消点赞'
             return json.code === 0 ? `🌸${reply}视频成功` : `🌸${reply}视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
@@ -375,20 +354,11 @@ class Bili {
     }
 
     async dislikevideo(userCookies, aid) {
-        const dislikeUrl = `${this.signApi}/dislike?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(dislikeUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.dislikevideo(userCookies, aid)
-            }
+            json = await BApi.dislikevideo(userCookies, aid)
+
             return json.code === 0 ? `🌸点踩视频成功` : `🌸点踩视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-plugin]点踩操作失败:", err);
@@ -397,20 +367,11 @@ class Bili {
     }
 
     async triplevideo(userCookies, aid) {
-        const tripleUrl = `${this.signApi}/triple?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(tripleUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.triplevideo(userCookies, aid)
-            }
+            json = await BApi.triplevideo(userCookies, aid)
+
             return json.code === 0 ? `🌸一键三连成功，视频已收藏至默认文件夹` : `🌸一键三连失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-plugin]一键三连操作失败:", err);
@@ -419,20 +380,11 @@ class Bili {
     }
 
     async favvideo(userCookies, aid) {
-        const favUrl = `${this.signApi}/fav?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(favUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.favvideo(userCookies, aid)
-            }
+            json = await BApi.favvideo(userCookies, aid)
+
             return json.code === 0 ? `🌸收藏视频成功，视频已收藏至默认文件夹` : `🌸收藏视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-plugin]收藏视频操作失败:", err);
@@ -441,20 +393,11 @@ class Bili {
     }
 
     async unfavvideo(userCookies, aid) {
-        const unfavUrl = `${this.signApi}/unfav?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}`
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(unfavUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.unfavvideo(userCookies, aid)
-            }
+            json = await BApi.unfavvideo(userCookies, aid)
+
             return json.code === 0 ? `🌸取消收藏视频成功！` : `🌸取消收藏视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-plugin]取消收藏视频操作失败:", err);
@@ -463,20 +406,11 @@ class Bili {
     }
 
     async replyvideo(userCookies, aid, msg) {
-        const replyUrl = `${this.signApi}/reply?accesskey=${userCookies.access_token}&key=${this.key}&aid=${aid}&msg=${msg}`
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(replyUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.replyvideo(userCookies, aid, msg)
-            }
+            json = await BApi.replyvideo(userCookies, aid, msg)
+
             return json.code === 0 ? `🌸评论视频成功！` : `🌸评论视频失败:${json.message || json.msg || '未知错误'}`;
         } catch (err) {
             logger.error("[Bili-plugin]评论视频操作失败:", err);
@@ -513,35 +447,7 @@ class Bili {
     }
 
     async getkey() {
-        // 签名API已禁用，跳过第三方密钥服务请求，避免网络超时刷屏
-        if (!config.Enable_SignApi) {
-            return null
-        }
-        const keyapi = `${this.signApi}/getkey`
-        try {
-            let rediskey = await redis.get('bili:apikey')
-            if (!rediskey) {
-                const key = await fetch(keyapi, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })
-                const keys = await key.json()
-                if (keys.code === 0) {
-                    await redis.set('bili:apikey', keys.key, {
-                        EX: 300
-                    })
-                    return keys.key
-                } else {
-                    logger.error(`[Bili-plugin]获取密钥失败请马上加入群聊联系解禁：${keys.msg}\n${keys.notice}`)
-                }
-            } else {
-                return rediskey
-            }
-        } catch (err) {
-            logger.error("[Bili-plugin]获取密钥失败", err)
-            return null
-        }
+        return null
     }
 
     loadConfig(configFilePath = this.configFilePath) {
@@ -682,20 +588,12 @@ class Bili {
     }
 
     async Dailyfriend(uin, skey, pskey) {
-        const qqdaily = `${this.signApi}/qqdaily?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`
         const results = [];
 
         try {
             let qqdailydataFirst
-            if (config.Enable_SignApi) {
-                qqdailydataFirst = await (await fetch(qqdaily, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json();
-            } else {
-                qqdailydataFirst = await QApi.Dailyfriend(uin, skey, pskey)
-            }
+            qqdailydataFirst = await QApi.Dailyfriend(uin, skey, pskey)
+
             await this.sleep(1500);
             results.push(qqdailydataFirst.code === 0 ? `🌸收集卡(第1张): 成功` : `🌸收集卡(第1张): 失败(${qqdailydataFirst.message || qqdailydataFirst.msg || '未知错误'})`);
             const filteredFriends = Array.from(Bot[uin].fl.keys()).filter(friendId => friendId !== uin);
@@ -703,29 +601,14 @@ class Bili {
             const friendsToShareWith = shuffledFriends.slice(0, 3);
             for (let i = 0; i < friendsToShareWith.length; i++) {
                 const friend = friendsToShareWith[i];
-                const qqshare = `${this.signApi}/qqshare?uin=${uin}&skey=${skey}&pskey=${pskey}&friend=${friend}&key=${this.key}`;
                 let qqsharedata
-                if (config.Enable_SignApi) {
-                    qqsharedata = await (await fetch(qqshare, {
-                        headers: {
-                            authorization: encodeURIComponent(config.Authorization),
-                        }
-                    })).json()
-                } else {
-                    qqsharedata = await QApi.Dailyfriendshare(uin, skey, pskey, friend)
-                }
+                qqsharedata = await QApi.Dailyfriendshare(uin, skey, pskey, friend)
+
                 await this.sleep(1500);
                 results.push(qqsharedata.code === 0 ? `🌸分享操作(第${i+1}次): 成功` : `🌸分享(第${i+1}次): 失败(${qqsharedata.message || qqsharedata.msg || '未知错误'})`);
                 let qqdailydataNext
-                if (config.Enable_SignApi) {
-                    qqdailydataNext = await (await fetch(qqdaily, {
-                        headers: {
-                            authorization: encodeURIComponent(config.Authorization),
-                        }
-                    })).json();
-                } else {
-                    qqdailydataNext = await QApi.Dailyfriend(uin, skey, pskey)
-                }
+                qqdailydataNext = await QApi.Dailyfriend(uin, skey, pskey)
+
                 await this.sleep(1500);
                 results.push(qqdailydataNext.code === 0 ? `🌸收集卡(第${i+2}张): 成功` : `🌸收集卡(第${i+2}张): 失败(${qqdailydataNext.message || qqdailydataNext.msg || '未知错误'})`);
             }
@@ -738,48 +621,18 @@ class Bili {
     }
 
     async DailySignCard(uin, skey, pskey) {
-        const qqdaily2 = `${this.signApi}/qqdaily2?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
-        const qqdaily3 = `${this.signApi}/qqdaily3?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
-        const qqdaily4 = `${this.signApi}/qqdaily4?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
-        const qqdaily5 = `${this.signApi}/qqdaily5?uin=${uin}&skey=${skey}&pskey=${pskey}&key=${this.key}`;
         const results = [];
         let qqdaily2data, qqdaily3data, qqdaily4data, qqdaily5data
         try {
-            if (config.Enable_SignApi) {
-                qqdaily2data = await (await fetch(qqdaily2, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json();
-                await this.sleep(1000);
-                qqdaily3data = await (await fetch(qqdaily3, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json();
-                await this.sleep(1000);
-                qqdaily4data = await (await fetch(qqdaily4, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json();
-                await this.sleep(1000);
-                qqdaily5data = await (await fetch(qqdaily5, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json();
-                await this.sleep(1000);
-            } else {
-                qqdaily2data = await QApi.DailySignCard1(uin, skey, pskey)
-                await this.sleep(1000);
-                qqdaily3data = await QApi.DailySignCard2(uin, skey, pskey)
-                await this.sleep(1000);
-                qqdaily4data = await QApi.DailySignCard3(uin, skey, pskey)
-                await this.sleep(1000);
-                qqdaily5data = await QApi.DailySignCard4(uin, skey, pskey)
-                await this.sleep(1000);
-            }
+            qqdaily2data = await QApi.DailySignCard1(uin, skey, pskey)
+            await this.sleep(1000);
+            qqdaily3data = await QApi.DailySignCard2(uin, skey, pskey)
+            await this.sleep(1000);
+            qqdaily4data = await QApi.DailySignCard3(uin, skey, pskey)
+            await this.sleep(1000);
+            qqdaily5data = await QApi.DailySignCard4(uin, skey, pskey)
+            await this.sleep(1000);
+
             results.push(qqdaily2data.code === 0 ? "🌸普通日签卡: 成功" : `🌸普通日签卡: 失败(${qqdaily2data.message || qqdaily2data.msg || '未知错误'})`);
             results.push(qqdaily3data.code === 0 ? "🌸晚安卡: 成功" : `🌸晚安卡: 失败(${qqdaily3data.message || qqdaily3data.msg || '未知错误'})`);
             results.push(qqdaily4data.code === 0 ? "🌸每日Q崽: 成功" : `🌸每日Q崽: 失败(${qqdaily4data.message || qqdaily4data.msg || '未知错误'})`);
@@ -855,20 +708,11 @@ class Bili {
     }
 
     async livesenddamu(userCookies, msg, roomid) {
-        const livedamu = `${this.signApi}/danmu2?accesskey=${userCookies.access_token}&msg=${msg}&roomid=${roomid}&key=${this.key}`;
         try {
             let response
             let damu
-            if (config.Enable_SignApi) {
-                response = await fetch(livedamu, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                damu = await response.json();
-            } else {
-                damu = await BApi.livesenddamu(userCookies, msg, roomid)
-            }
+            damu = await BApi.livesenddamu(userCookies, msg, roomid)
+
             if (damu.code === 0) {
                 return `===========================\n🌸B站账号『${userCookies.DedeUserID}』在直播间『${roomid}』发送弹幕『${msg}』成功`;
             } else {
@@ -882,20 +726,11 @@ class Bili {
 
 
     async getlivefeed(userCookies) {
-        const livefeed = `${this.signApi}/livefeed?accesskey=${userCookies.access_token}&key=${this.key}`;
         try {
             let response
             let livejson
-            if (config.Enable_SignApi) {
-                response = await fetch(livefeed, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                livejson = await response.json();
-            } else {
-                livejson = await BApi.getlivefeed(userCookies)
-            }
+            livejson = await BApi.getlivefeed(userCookies)
+
             let livedata = livejson.data?.card_list
                 ?.filter(card =>
                     card.card_type === "my_idol_v1" &&
@@ -926,20 +761,11 @@ class Bili {
 
 
     async gettoexplog(userCookies) {
-        const expLogUrl = `${this.signApi}/exp_log2?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`
         try {
             let response
             let expRet
-            if (config.Enable_SignApi) {
-                response = await fetch(expLogUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                expRet = await response.json();
-            } else {
-                expRet = await BApi.exp_log2(userCookies)
-            }
+            expRet = await BApi.exp_log2(userCookies)
+
             return expRet
         } catch (err) {
             logger.error("[Bili-plugin]获取经验日志失败", err);
@@ -947,20 +773,11 @@ class Bili {
     }
 
     async getwebinfo(userCookies) {
-        const webinfo = `${this.signApi}/myinfo?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`
         try {
             let response
             let web
-            if (config.Enable_SignApi) {
-                response = await fetch(webinfo, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                web = await response.json();
-            } else {
-                web = await BApi.myinfo(userCookies)
-            }
+            web = await BApi.myinfo(userCookies)
+
             return web
         } catch (err) {
             logger.error("[Bili-plugin]获取用户web端信息失败", err);
@@ -995,17 +812,9 @@ class Bili {
     }
 
     async getupinfo(mids, userCookies) {
-        const getInfoUrl = `${this.signApi}/userinfo?mid=${mids}&key=${this.key}&accesskey=${userCookies.access_token}`;
         let apiResponse
-        if (config.Enable_SignApi) {
-            apiResponse = await (await fetch(getInfoUrl, {
-                headers: {
-                    authorization: encodeURIComponent(config.Authorization),
-                }
-            })).json()
-        } else {
-            apiResponse = await BApi.getupinfo(mids, userCookies)
-        }
+        apiResponse = await BApi.getupinfo(mids, userCookies)
+
         const forwardNodes = [];
         if (apiResponse.code === 0 && apiResponse.data && apiResponse.data.length > 0) {
             for (const card of apiResponse.data) {
@@ -1042,9 +851,6 @@ class Bili {
 
 
     async getInfo(userCookies) {
-        const getInfoUrl = `${this.signApi}/space?accesskey=${userCookies.access_token}&mid=${userCookies.DedeUserID}&key=${this.key}`;
-        const expLogUrl = `${this.signApi}/exp_log2?SESSDATA=${userCookies.SESSDATA}&key=${this.key}`;
-        const info2 = `${this.signApi}/myinfo2?accesskey=${userCookies.access_token}&key=${this.key}`;
         const defaultResponse = {
             code: -1,
             data: {
@@ -1064,15 +870,8 @@ class Bili {
             ...defaultResponse
         };
         try {
-            if (config.Enable_SignApi) {
-                infoRet = await (await fetch(getInfoUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json()
-            } else {
-                infoRet = await BApi.space(userCookies.DedeUserID, userCookies)
-            }
+            infoRet = await BApi.space(userCookies.DedeUserID, userCookies)
+
         } catch (err) {
             logger.error('[Bili-plugin]空间接口请求失败:', err);
         }
@@ -1084,15 +883,8 @@ class Bili {
             }
         };
         try {
-            if (config.Enable_SignApi) {
-                info2Ret = await (await fetch(info2, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json()
-            } else {
-                info2Ret = await BApi.myinfo2(userCookies)
-            }
+            info2Ret = await BApi.myinfo2(userCookies)
+
         } catch (err) {
             logger.error('[Bili-plugin]详细信息请求失败:', err);
         }
@@ -1102,15 +894,8 @@ class Bili {
             data: {}
         };
         try {
-            if (config.Enable_SignApi) {
-                expRet = await (await fetch(expLogUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })).json()
-            } else {
-                expRet = await BApi.exp_log2(userCookies)
-            }
+            expRet = await BApi.exp_log2(userCookies)
+
         } catch (err) {
             logger.error('[Bili-plugin]经验日志请求失败:', err);
         }
@@ -1210,20 +995,11 @@ class Bili {
 
         let videoData = [];
         while (videoData.length < 5) {
-            const feedUrl = `${this.signApi}/feed2?accesskey=${userCookies.access_token}&key=${this.key}`;
             try {
                 let response
                 let json
-                if (config.Enable_SignApi) {
-                    response = await fetch(feedUrl, {
-                        headers: {
-                            authorization: encodeURIComponent(config.Authorization),
-                        }
-                    });
-                    json = await response.json();
-                } else {
-                    json = await BApi.getFeed(userCookies)
-                }
+                json = await BApi.getFeed(userCookies)
+
                 if (json.code !== 0) {
                     logger.error(`[Bili-plugin]获取推荐视频未知错误`);
                     break;
@@ -1259,20 +1035,11 @@ class Bili {
     }
 
     async addCoin(aid, userCookies, coin = 1) {
-        const coinUrl = `${this.signApi}/addcoin?accesskey=${userCookies.access_token}&aid=${aid}&coin=${coin}&like=1&key=${this.key}`;
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(coinUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.addCoin(aid, userCookies, coin)
-            }
+            json = await BApi.addCoin(aid, userCookies, coin)
+
             return json.code === 0 ? "🌸投币视频: 成功(10经验)" : `🌸投币视频: 失败(${json.message || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-plugin]投币操作失败:", err);
@@ -1299,273 +1066,38 @@ class Bili {
     }
 
     async Bilicheck() {
-        try {
-            const body = await this.getuserlists() || []
-            if (body) {
-                await redis.set('bili:lists', JSON.stringify(body), {
-                    EX: 1700
-                })
-            }
-            const key2 = await this.getkey()
-            const res = await fetch(`${this.signApi}/check?key=${this.key}&lists=${body}&key2=${key2}`, {
-                headers: {
-                    authorization: encodeURIComponent(config.Authorization),
-                }
-            })
-            const r = await res.json()
-            logger.mark(logger.cyan(r.msg))
-            return r.msg
-        } catch (err) {
-            logger.error("[Bili-plugin]校验出现错误：", err);
-            return '未知错误'
-        }
+        return '已关闭签到统计上报'
     }
 
     async fetchlist() {
-        try {
-            let uins = []
-            let isTRSS = Array.isArray(Bot.uin)
-            if (isTRSS) {
-                const cfg = (await import("../../../lib/config/config.js")).default;
-                uins = cfg['qq'] || ['114514']
-            } else {
-                uins = [Bot.uin] || ['114514']
-            }
-            const cached = await redis.get('bili:lists')
-            let body
-            if (cached) {
-                body = JSON.parse(cached)
-            } else {
-                body = await this.getuserlists() || []
-                await redis.set('bili:lists', JSON.stringify(body), {
-                    EX: 3600
-                })
-            }
-            const key2 = await this.getkey()
-            for (const uin of uins) {
-                await fetch(`${this.signApi}/userlists?uin=${uin}&key=${key2}`, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                await this.sleep(1000)
-            }
-            let configs
-            if (fs.existsSync(this.configFilePath)) {
-                const file = fs.readFileSync(`${pluginRoot}/config/config.yaml`, 'utf8');
-                configs = YAML.parse(file);
-            } else {
-                configs = {}
-            }
-            let y = false
-            if (lodash.get(configs, 'totalbody')) {
-                body = await lodash.get(configs, 'totalbody')
-                y = true
-            }
-            if (!body.length) {
-                body = await this.getuserlists()
-                y = false
-            }
-            let response
-            if (y) {
-                response = await fetch(`${config.totalApi}/userlists?lists=[${body}]`, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })
-            } else {
-                response = await fetch(`${config.totalApi}/userlists?lists=${body}`, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                })
-            }
-            const r = await response.json();
-            logger.mark(logger.cyan(r.msg))
-            return r.msg
-        } catch (err) {}
-    }
-
-    async getQQlist() {
-        let qq = [];
-        const getUins = (source) => {
-            if (Array.isArray(source)) {
-                return source;
-            } else if (typeof source === 'number' || typeof source === 'string') {
-                return [source];
-            }
-            return [];
-        };
-        let uins = getUins(Bot.uin);
-        if (uins.length === 0 && Bin && Bin.uin) {
-            uins = getUins(Bin.uin);
-        }
-        for (let attempt = 0; uins.length === 0 && attempt < 3; attempt++) {
-            uins = getUins(Bot.uin);
-            if (uins.length === 0 && Bin && Bin.uin) {
-                uins = getUins(Bin.uin);
-            }
-        }
-
-        qq.push(...uins.map(Number).filter(num => !isNaN(num)));
-
-        qq = qq.filter(number => !(
-            (number >= 2854000000 && number <= 2855000000) ||
-            (number >= 2854196301 && number <= 2854216399) ||
-            (number >= 3889000000 && number <= 3890000000) ||
-            number === 3328144510 ||
-            number === 66600000 ||
-            (number >= 4010000000 && number <= 4019999999)
-        ))
-        return qq;
-    }
-
-    async targetUsers() {
-        const coinUrl = `${this.signApi}/lists2?key=${this.key}`;
-        let text = []
-        const response = await fetch(coinUrl, {
-            headers: {
-                authorization: encodeURIComponent(config.Authorization),
-            }
-        })
-        text = await response.json()
-        return text
-    }
-
-    async thumbUp(qqList, targetUsers) {
-        for (let uin of qqList) {
-            for (let i of targetUsers) {
-                try {
-                    i = Number(i)
-                    uin = Number(uin)
-                    if (isNaN(i)) continue
-                    if (isNaN(uin)) continue
-                    if (await Bot[uin]?.fl?.has(i)) {
-                        await Bot[uin].pickFriend(i).thumbUp(20);
-                    } else {
-                        await Bot[uin].pickUser(i).thumbUp(20);
-                    }
-                } catch (error) {
-                    continue
-                }
-            }
-        }
-    }
-
-    async shareVideo(aid, userCookies) {
-        const shareUrl = `${this.signApi}/share?accesskey=${userCookies.access_token}&aid=${aid}&key=${this.key}`;
-        try {
-            let response
-            let json
-            if (config.Enable_SignApi) {
-                response = await fetch(shareUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.shareVideo(aid, userCookies)
-            }
-            if (json.data && json.data.toast) {
-                return json.data.toast;
-            } else if (json.data && json.data.count > 0) {
-                return "🌸分享视频: 成功(5经验)";
-            } else {
-                return "🌸分享视频: 失败(请重新登录)";
-            }
-        } catch (err) {
-            logger.error("[Bili-plugin]分享操作失败:", err);
-            return "🌸分享视频: 失败(未知错误)";
-        }
-    }
-
-    async reportWatch(aid, cid, userCookies, time = Math.floor(Math.random() * 91) + 10) {
-        const reportUrl = `${this.signApi}/report?accesskey=${userCookies.access_token}&aid=${aid}&cid=${cid}&key=${this.key}&time=${time}`;
-        try {
-            let response
-            let json
-            if (config.Enable_SignApi) {
-                response = await fetch(reportUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.reportWatch(aid, cid, userCookies, time)
-            }
-            if (json.code === 0) {
-                return "🌸观看视频: 成功(5经验)"
-            } else {
-                const reportUrl2 = `${this.signApi}/report?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&aid=${aid}&cid=${cid}&csrf=${userCookies.csrf}&key=${this.key}&time=${time}`
-                const response2 = await fetch(reportUrl2, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                const json2 = await response2.json()
-                return json2.code === 0 ? "🌸观看视频: 成功(5经验)" : "🌸观看视频: 失败(请求错误)";
-            }
-        } catch (err) {
-            logger.error("[Bili-plugin]观看操作失败:", err);
-            return "🌸观看视频: 失败(未知错误)";
-        }
+        return await this.getuserlists()
     }
 
     async getuserlists() {
-        const coinUrl = `${this.signApi}/lists2?key=${this.key}`;
-        let userList;
-        let text = []
-        try {
-            const response = await fetch(coinUrl, {
-                headers: {
-                    authorization: encodeURIComponent(config.Authorization),
-                }
-            })
-            try {
-                text = await response.text()
-            } catch (error) {
-                text = await response.json()
-            }
-            userList = JSON.parse(text);
-            if (!Array.isArray(userList)) {
-                userList = []
-            }
-        } catch (error) {
-            userList = []
+        const qq = [];
+        let uins;
+        if (Array.isArray(Bot.uin)) {
+            const cfg = (await import("../../../lib/config/config.js")).default;
+            uins = cfg['qq'] || ['114514']
+        } else {
+            uins = [Bot.uin] || ['114514']
         }
-        const blackUser = this.getConfig('blackUser') || [];
-        const blackQQ = this.getConfig('blackQQ') || [];
-        const usersToRemoveFromBlackUser = userList.filter(item => blackUser.includes(item));
-        const usersToRemoveFromBlackQQ = userList.filter(item => blackQQ.includes(item));
-        if (usersToRemoveFromBlackUser.length > 0) {
-            const updatedBlackUser = blackUser.filter(item => !usersToRemoveFromBlackUser.includes(item));
-            this.setConfig('blackUser', updatedBlackUser);
-        }
-        if (usersToRemoveFromBlackQQ.length > 0) {
-            const updatedBlackQQ = blackQQ.filter(item => !usersToRemoveFromBlackQQ.includes(item));
-            this.setConfig('blackQQ', updatedBlackQQ);
-        }
-
-        return text;
+        uins.forEach((element) => {
+            const nickname = Bot[element]?.nickname || (Bot.botList && Bot.botList[element]?.nickname) || String(element);
+            qq.push({
+                user_id: String(element),
+                nickname
+            });
+        });
+        return qq;
     }
 
     async getExperience(userCookies) {
-        const expUrl = `${this.signApi}/experience?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&csrf=${userCookies.csrf}&key=${this.key}`;
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(expUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.getExperience(userCookies)
-            }
+            json = await BApi.getExperience(userCookies)
+
             return json.code === 0 ? "成功" : `失败(${json.message || json.msg || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-plugin]大会员经验领取失败:", err);
@@ -1587,19 +1119,10 @@ class Bili {
         for (let type = 1; type <= 7; type++) {
             let result = "失败(未知错误)\n";
             try {
-                const couponUrl = `${this.signApi}/kaquan?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&csrf=${userCookies.csrf}&type=${type}&key=${this.key}`;
                 let response
                 let json
-                if (config.Enable_SignApi) {
-                    response = await fetch(couponUrl, {
-                        headers: {
-                            authorization: encodeURIComponent(config.Authorization),
-                        }
-                    });
-                    json = await response.json();
-                } else {
-                    json = await BApi.getCoupons(userCookies, type)
-                }
+                json = await BApi.getCoupons(userCookies, type)
+
                 result = json.code === 0 ? "成功" : `失败(${json.message || json.msg || '未知错误'})`;
             } catch (err) {
                 logger.error(`[Bili-plugin] ${couponTypes[type]} 领取失败:`, err);
@@ -1617,21 +1140,32 @@ class Bili {
         return Message
     }
 
+    async shareVideo(aid, userCookies) {
+        try {
+            const json = await BApi.shareVideo(aid, userCookies);
+            return json.code === 0 ? `${aid} 分享: 成功` : `${aid} 分享: 失败(${json.message || json.msg || '未知错误'})`;
+        } catch (err) {
+            logger.error("[Bili-plugin]分享视频失败:", err);
+            return `${aid} 分享: 失败(未知错误)`;
+        }
+    }
+
+    async reportWatch(aid, cid, userCookies, time) {
+        try {
+            const json = await BApi.reportWatch(aid, cid, userCookies, time);
+            return json.code === 0 ? `${aid} 观看: 成功` : `${aid} 观看: 失败(${json.message || json.msg || '未知错误'})`;
+        } catch (err) {
+            logger.error("[Bili-plugin]观看上报失败:", err);
+            return `${aid} 观看: 失败(未知错误)`;
+        }
+    }
+
     async shareManhua(userCookies) {
-        const manhuaShareUrl = `${this.signApi}/manhuashare?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&key=${this.key}`;
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(manhuaShareUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.shareManhua(userCookies)
-            }
+            json = await BApi.shareManhua(userCookies)
+
             if (json.msg === "今日已分享") {
                 return '🌸漫画分享: 今日已分享';
             } else if (json.data && json.data.point !== undefined) {
@@ -1651,20 +1185,11 @@ class Bili {
     }
 
     async signManhua(userCookies) {
-        const manhuaSignUrl = `${this.signApi}/manhuasign?SESSDATA=${encodeURIComponent(userCookies.SESSDATA)}&key=${this.key}`;
         try {
             let response
             let json
-            if (config.Enable_SignApi) {
-                response = await fetch(manhuaSignUrl, {
-                    headers: {
-                        authorization: encodeURIComponent(config.Authorization),
-                    }
-                });
-                json = await response.json();
-            } else {
-                json = await BApi.signManhua(userCookies)
-            }
+            json = await BApi.signManhua(userCookies)
+
             return json.code === 0 ? "🌸漫画签到: 成功" : `🌸漫画签到: 失败(${json.message || json.msg || '未知错误'})`;
         } catch (err) {
             logger.error("[Bili-plugin]漫画签到失败:", err);

@@ -56,6 +56,11 @@ export class Biliswitch extends plugin {
                     reg: "^(添加|删除)撤回白名单群",
                     fnc: 'recallwhile',
                     permission: 'master'
+                },
+                {
+                    reg: "^#?(开启|关闭)B站解析$",
+                    fnc: 'switchjx',
+                    permission: 'master'
                 }
             ]
         });
@@ -95,6 +100,24 @@ export class Biliswitch extends plugin {
     }
 
 
+    async switchjx(e) {
+        if (!(e.isMaster)) {
+            await this.e.reply("暂无权限，仅主人才能操作哦~", true)
+            return
+        }
+        let config = YAML.parse(fs.readFileSync(filePath, 'utf8'));
+        let action = e.msg.includes('开启') ? '开启' : e.msg.includes('关闭') ? '关闭' : '';
+        if (!action) {
+            e.reply('无效的操作，请输入"开启B站解析"或"关闭B站解析"', true);
+            return;
+        }
+        config.Switchjx = action === '开启';
+        fs.writeFileSync(filePath, YAML.stringify(config), 'utf8');
+        e.reply(`B站视频解析已${action}`, true);
+        return true;
+    }
+
+    
     async switchbaoshigroup(e) {
         if (!(e.isMaster || e.member.is_admin || e.member.is_owner)) {
             await this.e.reply("暂无权限，仅群主或管理才能添加哦~", true)

@@ -40,7 +40,8 @@ export class Bilijx extends plugin {
                 await handler.call(this, e, result.data);
             }
         } catch (error) {
-            logger.info('[Bili-plugin] 解析出错:', error);
+            logger.error('[Bili-plugin] 解析出错:', error);
+            await e.reply('B站视频解析失败，解析服务可能异常，请稍后再试', false);
         }
     }
 

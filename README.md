@@ -1,6 +1,6 @@
 <div align="center">
 
-# [NenNen_CN](https://gitee.com/nennen-cn)
+# [sarsxe](https://github.com/sarsxe)
 
 <img decoding="async" align=right src="resources/imgs/face.gif" width="35%">
 </div>
@@ -15,16 +15,16 @@
 > 💻 对Yunzai框架有基本认知  
 
 ❌ **如不满足以上要求**：  
-请立即停止安装并关闭页面 → [快速挂号通道](https://www.guahao.com/nav)
+请立即停止安装并关闭页面 → [快速通道](https://hk.search.yahoo.com/search?p=)
 
 
 ---
 
 ## 🎯 功能说明
-- 全面适配 [TRSS Yunzai v3.1.3](https://github.com/TimeRainStarSky/Yunzai)
+- 适配 [TRSS Yunzai v3.1.3](https://github.com/TimeRainStarSky/Yunzai)
 - 兼容 [Miao-Yunzai v3.1.3](https://github.com/yoimiya-kokomi/Miao-Yunzai)
-- 支持B站账号管理/签到/直播监听等30+功能
-- 如有问题请前往[群聊](https://qm.qq.com/q/h5g1zIyWTS)反馈
+- 摆烂·不支持B站账号管理/签到/直播监听等30+功能
+- 如有问题请前往[必应](https://cn.bing.com/search?q=)查找解决
 
 ---
 
@@ -83,14 +83,13 @@ pnpm install --filter=bili-plugin
 | [TRSS-Plugin](https://gitee.com/TimeRainStarSky/TRSS-Plugin) | 食欲的吴迪插件 |
 | [QQBot-Plugin](https://gitee.com/xiaoye12123/Yunzai-QQBot-Plugin) | 小叶的Yunzai-QQBot-Plugin |
 | [Packet-plugin](https://gitee.com/HDTianRu/Packet-plugin) | 天如的吴迪插件 🔥🌲去点star|
-| [哔哩哔哩 - API 收集整理](https://github.com/SocialSisterYi/bilibili-API-collect) | 哔哩哔哩 - API 收集整理 |
 
 
-## 联系方式
+## 联系方式（旧）
 1. QQ: 1514664085
 2. QQ群: 470225982
 
-## 赞助
+## 赞助（旧）
 
 <details>
 <summary>赞赏码 以及 感谢投喂 </summary>

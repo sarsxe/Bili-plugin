@@ -1,9 +1,7 @@
 #是否启用签到API(默认关闭,仅在你无法签到的情况下可以手动打开，部分功能暂不支持)
-Enable_SignApi: false
 #是否启用登录API(默认关闭,仅在你无法登录的情况下可以手动打开)
 Enable_LoginApi: false
 #签到API(不知道是上什么不要动)
-signApi: http://113.44.131.92:2536/bili
 #登录API
 loginApi: http://113.44.131.92:3333/bili
 #开启或关闭使用代理
@@ -29,7 +27,7 @@ baoshiapi: http://127.0.0.1
 #是否启动解析
 Switchjx: true
 #默认解析CK
-SESSDATA: 这里可以填写默认解析ck(仅SESSDATA字段即可)，用于解析视频(没有哔站登录的用户，已登录的用户使用自己的)，下面的配置是最大视频发送大小/MB
+SESSDATA: 
 #最大支持发送视频大小
 maxVideoSizeMB: "75"
 #幸运字符机器人QQ号
@@ -53,7 +51,6 @@ whoisMyWifecacheTime: 3600
 #娶群友时随机选择的群友数(影响成功率)
 whoisMyWifemaxMembers: 5
 #鉴权请求API需要
-Authorization: ""
 #是否直接发送按钮，仅支持TRSS && ICQQ && NapCat，仅9.1.50 ~9.1.65？&& 电脑 可见
 sendbutton: false
 #按钮类型，仅下面四种，不要自己乱写，可以自己删，发送消息的按钮由4个里面随机
