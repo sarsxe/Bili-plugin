@@ -94,7 +94,7 @@ export class Biliinfo extends plugin {
                 });
 
             } catch (err) {
-                logger.error("[Bili-Plugin]获取哔站信息失败:", err);
+                logger.error("[Bili-plugin]获取哔站信息失败:", err);
                 forwardNodes.push({
                     user_id: e.user_id || '1677979616',
                     nickname: e.sender.nickname || '哔站信息查询',

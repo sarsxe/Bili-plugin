@@ -321,8 +321,8 @@ class Config {
         let secondHour = startHour + interval > 21 ? 21 : startHour + interval;
         const minute = Math.floor(Math.random() * 60);
         const cronExpression = `0 ${minute} ${startHour},${secondHour} * * *`;
-        logger.mark(`[Bili-Plugin]获取哔站自动签到时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`)
-        logger.mark(`[Bili-Plugin]据说依据超强统计学原理，生成成功率99.99%`)
+        logger.mark(`[Bili-plugin]获取哔站自动签到时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`)
+        logger.mark(`[Bili-plugin]据说依据超强统计学原理，生成成功率99.99%`)
         return cronExpression;
     }
     // 生成节日查询定时任务
@@ -337,8 +337,8 @@ class Config {
         let minute = Math.floor(Math.random() * 60);
         let second = Math.floor(Math.random() * 60);
         const cronExpression = `${second} ${minute} ${hour} * * *`;
-        logger.mark(`[Bili-Plugin]获取节日查询时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`)
-        logger.mark(`[Bili-Plugin]据说依据超强统计学原理，生成成功率99.99%`)
+        logger.mark(`[Bili-plugin]获取节日查询时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`)
+        logger.mark(`[Bili-plugin]据说依据超强统计学原理，生成成功率99.99%`)
         return cronExpression;
     }
 
@@ -349,8 +349,8 @@ class Config {
         let minute = Math.floor(Math.random() * 60)
         let second = Math.floor(Math.random() * 60);
         const cronExpression = `${second} ${minute} ${hour} * * *`;
-        logger.mark(`[Bili-Plugin]获取哔站幸运字符时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`)
-        logger.mark(`[Bili-Plugin]据说依据超强统计学原理，生成成功率99.99%`)
+        logger.mark(`[Bili-plugin]获取哔站幸运字符时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`)
+        logger.mark(`[Bili-plugin]据说依据超强统计学原理，生成成功率99.99%`)
         return cronExpression;
     }
 
@@ -376,8 +376,8 @@ class Config {
         } while (true);
         const second = Math.floor(Math.random() * 60);
         const cronExpression = `${second} ${m1},${m2},${m3} * * * *`;
-        logger.mark(`[Bili-Plugin]获取直播间弹幕发送时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`);
-        logger.mark(`[Bili-Plugin]据说依据超强统计学原理，生成成功率99.99%`)
+        logger.mark(`[Bili-plugin]获取直播间弹幕发送时间成功：${logger.yellow(cronExpression)},已保存至配置文件，请勿修改！！`);
+        logger.mark(`[Bili-plugin]据说依据超强统计学原理，生成成功率99.99%`)
         return cronExpression;
     }
     closeWatcher() {

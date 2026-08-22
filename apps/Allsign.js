@@ -20,7 +20,7 @@ export class Biliallsign extends plugin {
 
         this.task = {
             cron: config.cron,
-            name: '[Bili-Plugin]B站自动签到',
+            name: '[Bili-plugin]B站自动签到',
             fnc: () => this.signAllBilibili()
         };
     }
@@ -59,7 +59,7 @@ export class Biliallsign extends plugin {
             files = files.filter(file => !existingFiles.includes(file));
             */
             if (files.length === 0) {
-                logger.mark("[Bili-Plugin]全部哔站账号已完成签到");
+                logger.mark("[Bili-plugin]全部哔站账号已完成签到");
                 if (this.e) this.e.reply("所有用户已完成签到啦~", true);
                 await redis.del('bili:autosign:task');
                 return;
@@ -127,7 +127,7 @@ export class Biliallsign extends plugin {
                         }
 
                         const videoData = await Bili.getFeed(userCookies).catch(err => {
-                            logger.error(`[Bili-Plugin]获取视频失败: ${err}`);
+                            logger.error(`[Bili-plugin]获取视频失败: ${err}`);
                             return []
                         })
                         for (let i = 0; i < videoData.length; i++) {
@@ -226,7 +226,7 @@ export class Biliallsign extends plugin {
                         issign = true
                         needMsg = true
                     } catch (err) {
-                        logger.error(`[Bili-Plugin]账号${userId}签到失败: ${err}`);
+                        logger.error(`[Bili-plugin]账号${userId}签到失败: ${err}`);
                     }
                 }
                 const savePath = path.join(tempDirPath, file);
@@ -277,7 +277,7 @@ export class Biliallsign extends plugin {
                 }
             }
         } catch (err) {
-            logger.error(`[Bili-Plugin]签到任务异常终止: ${err}`);
+            logger.error(`[Bili-plugin]签到任务异常终止: ${err}`);
             await redis.del('bili:autosign:task');
             if (this.e) this.e.reply("签到任务执行失败，请检查日志", true);
         }

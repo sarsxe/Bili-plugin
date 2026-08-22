@@ -92,7 +92,7 @@ class BApi {
                 const arrayBuffer = await response.arrayBuffer();
                 avatarImage = Buffer.from(arrayBuffer);
             } catch (error) {
-                logger.error('[BILI-PLUGIN]无法获取用户头像', error);
+                logger.error('[Bili-plugin]无法获取用户头像', error);
                 avatarImage = null;
             }
             const compositeImages = [{ input: qrBuffer }];
@@ -131,7 +131,7 @@ class BApi {
                 }
             }
         } catch (error) {
-            logger.error('[BILI-PLUGIN] 获取登录二维码失败', error);
+            logger.error('[Bili-plugin] 获取登录二维码失败', error);
             return {
                 code: -1,
                 msg: error.message || "QR code generation failed",
@@ -310,10 +310,10 @@ class BApi {
             const agent = new HttpsProxyAgent(config.proxyAddress);
             agent.timeout = 5000
             agent.on('error', (err) => {
-              logger.error('[Bili-Plugin] 代理连接错误:', err);
+              logger.error('[Bili-plugin] 代理连接错误:', err);
             });
             requestOptions.agent = agent
-            logger.debug(`[Bili-Plugin] 代理已启用 → ${config.proxyAddress}`);
+            logger.debug(`[Bili-plugin] 代理已启用 → ${config.proxyAddress}`);
           }
 
           if (method === 'POST') {
@@ -326,7 +326,7 @@ class BApi {
           const response = await fetch(urlObj.toString(), requestOptions);
           return await response.json();
         } catch (error) {
-          logger.error('[Bili-Plugin]请求B站API失败:', error)
+          logger.error('[Bili-plugin]请求B站API失败:', error)
           return {
             code: -1,
             msg: '请求B站API失败(可能是你IP被拉黑)',

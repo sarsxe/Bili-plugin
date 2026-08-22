@@ -40,7 +40,7 @@ export class BiliAccount extends plugin {
             e.reply( `${res2}\n${res}`,true);
             return
         } catch (err) {
-            logger.error("[Bili-Plugin]校验失败：", err);
+            logger.error("[Bili-plugin]校验失败：", err);
             e.reply("不好啦~插件凉凉惹TAT", true);
         }
     }

@@ -52,7 +52,7 @@ export class Bilidamu extends plugin {
       );
         await e.reply(result, true);
     } catch (err) {
-      logger.error('[Bili-Plugin]弹幕发送异常:', err);
+      logger.error('[Bili-plugin]弹幕发送异常:', err);
     }
     return true
   }

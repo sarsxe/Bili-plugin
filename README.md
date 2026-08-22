@@ -34,13 +34,13 @@
 
  - GitHub 源
 ``` bash 
-git clone --depth=1 https://github.com/miltrbefr/Bili-Plugin.git ./plugins/Bili-Plugin/
+git clone --depth=1 https://github.com/sarsxe/Bili-plugin.git ./plugins/Bili-plugin/
 ```
 > [!NOTE]
 > 如果你的网络环境较差，无法连接到 Github，可以使用 [守夜人](https://gitee.com/xh11111111) 提供的文件代理加速下载服务
 >
 > ```
-> git clone --depth=1 https://gh.xiaohuanya.top/https://github.com/miltrbefr/Bili-Plugin.git ./plugins/Bili-Plugin/
+> git clone --depth=1 https://gh.xiaohuanya.top/https://github.com/sarsxe/Bili-plugin.git ./plugins/Bili-plugin/
 > ```
 
  - 安装依赖

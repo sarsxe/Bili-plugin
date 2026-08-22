@@ -64,7 +64,7 @@ export class Bilimiyocode extends plugin {
             const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
             await e.reply(forwardMessage, false);
         } catch (err) {
-            logger.error(`[Bili-Plugin] 获取兑换码失败，action=${action}, msg=${e.msg}:`, err);
+            logger.error(`[Bili-plugin] 获取兑换码失败，action=${action}, msg=${e.msg}:`, err);
             e.reply("不好啦~获取失败惹TAT", true);
         }
     }

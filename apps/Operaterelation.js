@@ -68,7 +68,7 @@ export class Bilirelate extends plugin {
             await e.reply([result, new Button().Operate()], true);
 
         } catch (err) {
-            logger.error("[Bili-Plugin]用户关系操作失败：", err);
+            logger.error("[Bili-plugin]用户关系操作失败：", err);
             await e.reply("操作出错，请稍后再试~", true);
         }
     }

@@ -109,7 +109,7 @@ export class Biliuserlive extends plugin {
                     });
                 }
             } catch (err) {
-                logger.error("[Bili-Plugin]获取主播去哪了失败:", err);
+                logger.error("[Bili-plugin]获取主播去哪了失败:", err);
                 forwardNodes.push({
                     user_id: e.user_id || '1677979616',
                     nickname: e.sender.nickname || '主播去哪了',

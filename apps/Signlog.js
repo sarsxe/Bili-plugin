@@ -55,7 +55,7 @@ export class Bililog extends plugin {
             if (err.code === 'ENOENT') {
                 e.reply('你还没有签到呢~',true);
             } else {
-                logger.error('[Bili-Plugin]',err);
+                logger.error('[Bili-plugin]',err);
                 e.reply('未知错误',true);
             }
         }

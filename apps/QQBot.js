@@ -40,7 +40,7 @@ for (const modulePath of possiblePaths) {
 }
 if (!QQBotconfig) {
     logger.error(
-        `[BILI-PLUGIN] 未找到QQBot的配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`
+        `[Bili-plugin] 未找到QQBot的配置文件 ${logger.yellow("直接发链接功能")} 将无法使用`
     )
 }
 

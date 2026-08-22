@@ -156,7 +156,7 @@ export class Bililogin extends plugin {
                     anyFailure = true;
                 }
             } catch (error) {
-                logger.error("[Bili-Plugin]刷新ck报错:", error);
+                logger.error("[Bili-plugin]刷新ck报错:", error);
                 refreshedAccounts.push(`账号 ${DedeUserID} 未知错误，请稍后再试`);
                 anyFailure = true;
             }

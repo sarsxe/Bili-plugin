@@ -29,7 +29,7 @@ const Render = {
         if(!info) info = await Bili.getsha() || `& Sha: 114514 & Date: 1919810`
         let { e } = cfg
         if (!e.runtime) {
-            logger.mark(logger.blue('[Bili-Plugin]'), logger.red(`未找到e.runtime，请升级至最新版Yunzai`));
+            logger.mark(logger.blue('[Bili-plugin]'), logger.red(`未找到e.runtime，请升级至最新版Yunzai`));
         }
 
         let BotName = Version.isMiao ? 'Miao-Yunzai' : Version.isTrss ? 'TRSS-Yunzai' : 'Yunzai-Bot'
@@ -41,14 +41,14 @@ const Render = {
                 currentVersion = package_json.version
             }
         } catch (error) {
-            logger.mark(logger.blue('[Bili-Plugin]'), logger.cyan(`读取 package.json 失败`), logger.red(error));
+            logger.mark(logger.blue('[Bili-plugin]'), logger.cyan(`读取 package.json 失败`), logger.red(error));
         }
-        return e.runtime.render('Bili-Plugin', path, params, {
+        return e.runtime.render('Bili-plugin', path, params, {
             retType: cfg.retType || (cfg.retMsgId ? 'msgId' : 'default'),
             beforeRender({ data }) {
                 let pluginName = ''
                 if (data.pluginName !== false) {
-                    pluginName = ` & ${data.pluginName || 'Bili-Plugin'}`
+                    pluginName = ` & ${data.pluginName || 'Bili-plugin'}`
                     if (data.pluginVersion !== false) {
                         pluginName += `<span class="version">${currentVersion}</span>`
                     }

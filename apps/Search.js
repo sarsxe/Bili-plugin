@@ -40,7 +40,7 @@ export class BiliSearch extends plugin {
             const forwardMessage = await Bot.makeForwardMsg(forwardNodes)
             await e.reply(forwardMessage, false);
         } catch (error) {
-            logger.error('[Bili-Plugin]查询up信息失败：',error)
+            logger.error('[Bili-plugin]查询up信息失败：',error)
             await e.reply(`出错了，请检查日志`, true);
         }
     }
