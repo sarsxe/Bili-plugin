@@ -5,8 +5,6 @@ import path from 'path';
 import moment from 'moment';
 if (!global.___) global.___ = ___
 const Running = {}
-const signApi = config.signApi
-const loginapi = config.loginApi
 const tempBilibiliDir = './data/bili'
 
 export class Bililogin extends plugin {
@@ -120,17 +118,8 @@ export class Bililogin extends plugin {
                 anyFailure = true;
                 continue;
             }
-            const url = `${signApi}/refresh?accesskey=${userCookies.access_token}&refresh_token=${userCookies.refresh_token}&key=${Bot.uin}`;
-
             try {
-                let response
-                let data
-                if (config.Enable_SignApi) {
-                    response = await fetch(url)
-                    data = await response.json()
-                } else {
-                    data = await BApi.refresh(userCookies.access_token, userCookies.refresh_token)
-                }
+                const data = await BApi.refresh(userCookies.access_token, userCookies.refresh_token)
 
                 if (data.code === 0) {
                     const expires = data.data.token_info.expires_in;

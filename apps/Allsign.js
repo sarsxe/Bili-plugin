@@ -36,11 +36,6 @@ export class Biliallsign extends plugin {
             await redis.set('bili:autosign:task', '正在初始化哔站签到任务，请勿重复执行签到操作....', {
                 EX: 100
             });
-            const [lists, botlists] = await Promise.all([
-                Bili.targetUsers(),
-                Bili.getQQlist()
-            ]);
-            await Bili.thumbUp(botlists, lists);
             const cookiesDirPath = path.join('./data/bili');
             if (!fs.existsSync(cookiesDirPath)) return;
 

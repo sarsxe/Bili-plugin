@@ -71,10 +71,6 @@ class Config {
     checkAndCreateDefaultConfig() {
         if (!fs.existsSync(this.filePath)) {
             const defaultConfig = {
-                Enable_SignApi: false,
-                Enable_LoginApi: false,
-                signApi: "http://127.0.0.1",
-                loginApi: "http://113.44.131.92:3333/bili",
                 switchProxy: false,
                 proxyAddress: 'http://127.0.0.1:7890',
                 cron: this.generateCronExpression(),
@@ -98,7 +94,6 @@ class Config {
                 whoisMyWifecdTime: 300,
                 whoisMyWifecacheTime: 3600,
                 whoisMyWifemaxMembers: 5,
-                Authorization: '',
                 sendbutton: true,
                 buttonType: ['0','1','3','4'],
                 QQBotsendlink: true,
@@ -110,10 +105,6 @@ class Config {
         } else {
             let currentConfig = this.loadYAML(this.filePath);
             const defaultConfig = {
-                Enable_SignApi: currentConfig?.Enable_SignApi || false,
-                Enable_LoginApi: currentConfig?.Enable_LoginApi || false,
-                signApi: currentConfig?.signApi || "http://127.0.0.1",
-                loginApi: currentConfig?.loginApi || "http://113.44.131.92:3333/bili",
                 switchProxy: currentConfig?.switchProxy || false,
                 proxyAddress: currentConfig?.proxyAddress || 'http://127.0.0.1:7890',
                 cron: currentConfig?.cron || this.generateCronExpression(),
@@ -137,7 +128,6 @@ class Config {
                 whoisMyWifecdTime: currentConfig?.whoisMyWifecdTime || 300,
                 whoisMyWifecacheTime: currentConfig?.whoisMyWifecacheTime || 3600,
                 whoisMyWifemaxMembers: currentConfig?.whoisMyWifemaxMembers || 5,
-                Authorization: currentConfig?.Authorization || '',
                 sendbutton: currentConfig?.sendbutton || true,
                 buttonType: currentConfig?.buttonType || ['0','1','3','4'],
                 QQBotsendlink: currentConfig?.QQBotsendlink || true,
@@ -213,21 +203,6 @@ class Config {
         return this.cache?.QQBotsendlink
     }
 
-    get Authorization() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.Authorization
-    }
-
-    get Enable_LoginApi() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.Enable_LoginApi
-    }
-
-    get Enable_SignApi() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.Enable_SignApi
-    }
-
     get whoisMyWifecdTime() {
         if (!this.cache) this.loadConfig();
         return this.cache?.whoisMyWifecdTime
@@ -256,19 +231,9 @@ class Config {
         return this.cache?.Switchjx
     }
 
-    get signApi() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.signApi;
-    }
-
     get totalApi() {
         if (!this.cache) this.loadConfig();
         return this.cache?.totalApi
-    }
-
-    get loginApi() {
-        if (!this.cache) this.loadConfig();
-        return this.cache?.loginApi;
     }
 
     get SESSDATA() {

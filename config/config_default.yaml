@@ -2,11 +2,13 @@
 #是否启用登录API(默认关闭,仅在你无法登录的情况下可以手动打开)
 Enable_LoginApi: false
 #签到API(不知道是上什么不要动)
-#登录API
+#登录API（已抛弃，做纪念）
 loginApi: http://113.44.131.92:3333/bili
 #开启或关闭使用代理
 switchProxy: false
-#代理链接，如果代理需要认证，需要在代理地址中包含用户名密码，例如：http://user:pass@host:port
+#代理链接，如果代理需要认证，
+#需要在代理地址中包含用户名密码，
+#例如：http://user:pass@host:port
 proxyAddress: 'http://127.0.0.1:7890'
 #自动签到cron
 cron: 0 39 7 * * ? *

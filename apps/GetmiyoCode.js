@@ -29,16 +29,16 @@ export class Bilimiyocode extends plugin {
             if (codeList.length === 0) return false;  // 获取失败就让别的插件处理
 
             forwardNodes.push({
-                user_id: '80000000',
-                nickname: '匿名消息',
+                user_id: Bot.uin,
+                nickname: Bot[Bot.uin]?.nickname || '机器人',
                 message: `${action === 1 ? '原神' : action === 2 ? '星铁' : '绝区零'}前瞻游戏兑换码\n失效时间：${response.date || '未知'}`
             });
 
             for (const item of codeList) {
                 if (item.img) {
                     forwardNodes.push({
-                        user_id: '80000000',
-                        nickname: '匿名消息',
+                        user_id: Bot.uin,
+                        nickname: Bot[Bot.uin]?.nickname || '机器人',
                         message: [
                             segment.image(item.img),
                             `======================\n`,
@@ -49,8 +49,8 @@ export class Bilimiyocode extends plugin {
                     });
                 } else {
                     forwardNodes.push({
-                        user_id: '80000000',
-                        nickname: '匿名消息',
+                        user_id: Bot.uin,
+                        nickname: Bot[Bot.uin]?.nickname || '机器人',
                         message: [
                             `======================\n`,
                             `${item.title}\n`,

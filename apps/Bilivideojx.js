@@ -1,5 +1,5 @@
 import config from '../model/Config.js';
-import Bili from '../model/bili.js';
+import Bili from '../model/bili/index.js';
 import fs from 'fs';
 import path from 'path';
 

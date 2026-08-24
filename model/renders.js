@@ -1,5 +1,5 @@
 import Version from '../model/Version.js'
-import Bili from '../model/bili.js';
+import Bili from '../model/bili/index.js';
 import { pluginRoot, pluginResources } from '../model/constant.js'
 import fs from 'fs'
 let info

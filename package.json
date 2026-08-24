@@ -1,10 +1,10 @@
 {
   "name": "bili-plugin",
-  "version": "2.2.6",
+  "version": "3.0.0",
   "type": "module",
   "main": "index.js",
-  "author": "NenNen_CN",
-  "Contributor": [1677979616,1514664085,3374625944],
+  "author": "sarsxe",
+  "Contributor": [2891044927],
   "license": "MIT",
   "dependencies": {
     "ws": "^8.16.0",
