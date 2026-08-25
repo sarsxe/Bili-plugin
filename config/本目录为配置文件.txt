@@ -5,4 +5,4 @@ config/
 ├── config_default.yaml      ← 配置注释
 └──config.yaml               ← 配置文件
 当前最新版本号
-"version": "2.2.6"
+"version": "3.0.0"

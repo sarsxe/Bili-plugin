@@ -96,6 +96,14 @@ export default {
                 headers: headers,
                 body
             })
+            const contentType = response.headers.get('content-type') || ''
+            if (!contentType.includes('application/json')) {
+                logger.warn(`[Bili-plugin]幸运字符接口返回非JSON内容（群${group}），可能是Cookie失效或接口变更`)
+                return {
+                    code: 114514,
+                    msg: `🌸抽字符接口异常，请尝试刷新CK后重试`
+                };
+            }
             const responseJson = await response.json();
             if (responseJson.retcode === 0 && responseJson.data.word_info) {
                 let {

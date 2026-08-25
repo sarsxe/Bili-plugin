@@ -11,15 +11,15 @@ switchProxy: false
 #例如：http://user:pass@host:port
 proxyAddress: 'http://127.0.0.1:7890'
 #自动签到cron
-cron: 0 39 7 * * ? *
+cron: "0 39 7 * * ?"
 #自动弹幕cron
-livecron: 0 49 7 * * ? *
+livecron: "0 49 7 * * ?"
 #自动日签卡cron
-QQDaily: 0 19 7 * * ? *
+QQDaily: "0 19 7 * * ?"
 #自动抽群幸运字符cron
-luckywordcron: 7 7 7 * * ? *
+luckywordcron: "0 7 7 * * ?"
 #自动节日推送cron
-festivalpush: 0 19 8 * * ? *
+festivalpush: "0 19 8 * * ?"
 #自动弹幕的一言API，只支持响应text
 yiyan: https://v1.hitokoto.cn/?encode=text
 #统计信息API

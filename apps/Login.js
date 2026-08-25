@@ -1,4 +1,5 @@
 import { Config as config, Button as Button, BAPI as BApi, Bili as Bili, _ as ___} from "#model"
+import { syncAccountToConfig } from '../lib/config.js'
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
@@ -27,7 +28,57 @@ export class Bililogin extends plugin {
     }
 
     async bililogin(e) {
-        e.reply("扫码功能被我删啦\n🤣🤣🤣👆👆", true);
+        if (Running[e.user_id]) return e.reply("前置二维码未失效，请稍后尝试", true);
+        if (!fs.existsSync(tempBilibiliDir)) {
+            fs.mkdirSync(tempBilibiliDir, {
+                recursive: true
+            })
+        }
+        try {
+            const loginkey = `${e.user_id}:${e.self_id}`
+            const qrInfo = await BApi.getloginqrcode(loginkey, e)
+            if (qrInfo.data.url) this.reply([segment.image(qrInfo.data.url), '请在90s内使用B站进行扫码\n本消息2分钟后自动撤回', new Button().bind()], true, { recallMsg: 120 })
+            else this.reply([segment.image(qrInfo.data.base64), '请在90s内使用B站进行扫码\n本消息2分钟后自动撤回', new Button().bind()], true, { recallMsg: 120 })
+            Running[e.user_id] = true
+            const maxPolls = 18
+            const intervalTime = 5000
+            let scanned = false
+            for (let pollCount = 0; pollCount < maxPolls; pollCount++) {
+                await Bili.sleep(intervalTime)
+                try {
+                    const result = await BApi.pollQrCode(loginkey)
+                    if (result.code === 0 && result.data) {
+                        await this.saveCookieData(String(e.user_id).replace(/:/g, '_').trim(), result.data, e)
+                            try { await e.reply(['登录成功', new Button().help()], true) } catch { await e.reply(['登录成功', new Button().help()]) }
+                        Running[e.user_id] = false
+                        if (e.group_id) redis.set(`bili:group:${String(e.user_id).replace(/:/g, '_').trim()}`, `${e.group_id}`)
+                        return true
+                    } else if (result.code === 86038) {
+                        e.reply('登录二维码已失效，请重新尝试', true);
+                        Running[e.user_id] = false
+                        return true
+                    } else if (result.code === 86090) {
+                        if (!scanned) {
+                            scanned = true
+                            e.reply('扫码成功，请确认登录', true)
+                        }
+                    }
+                } catch (error) {
+                    logger.error('[Bili-Plugin]登录错误', error);
+                    e.reply(['发生错误，请稍后再试', new Button().bind()])
+                    Running[e.user_id] = false
+                    return true
+                }
+            }
+            try { await e.reply(['登录超时显类后同唎杔测小', new Button().bind()], true) } catch { await e.reply(['登录超时显类后同唎杔测小', new Button().bind()]) }
+            Running[e.user_id] = false
+            return true
+        } catch (error) {
+            logger.error('[Bili-Plugin]获取二维码报错：', error)
+            e.reply('获取二维码失败，请稍后再试', true)
+            Running[e.user_id] = false
+            return true
+        }
     }
 
     async saveCookieData(userId, data, e) {
@@ -93,6 +144,7 @@ export class Bililogin extends plugin {
         }
         fs.writeFileSync(storagePath, JSON.stringify(cookies, null, 2))
         redis.set(`bili:userset:${String(e.user_id).replace(/:/g, '_').trim()}`, parsedCookies['DedeUserID'])
+        syncAccountToConfig(String(e.user_id).replace(/:/g, '_').trim(), cookies)
     }
 
     async refreshUserToken(e) {
@@ -157,6 +209,6 @@ export class Bililogin extends plugin {
 
         fs.writeFileSync(cookieFile, JSON.stringify(cookies, null, 4));
         const replyMessage = anyFailure ? "部分账号刷新失败。\n" : "所有账号刷新成功。\n";
-        e.reply([`${replyMessage}${refreshedAccounts.join('\n')}`, new Button().bind()])
+        try { await e.reply([`${replyMessage}${refreshedAccounts.join('\n')}`, new Button().bind()], true) } catch { await e.reply([`${replyMessage}${refreshedAccounts.join('\n')}`, new Button().bind()]) }
     }
 }

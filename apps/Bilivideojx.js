@@ -1,4 +1,5 @@
 import config from '../model/Config.js';
+import { getParseCk } from '../lib/config.js'
 import Bili from '../model/bili/index.js';
 import fs from 'fs';
 import path from 'path';
@@ -27,7 +28,7 @@ export class Bilijx extends plugin {
             const url = this.extractUrl(e.msg);
             if (!url) return;
 
-            const SESSDATA = await this.getUserSession(e.user_id);
+            const SESSDATA = getParseCk(e.user_id);
             const result = await Bili.getvideoinfo(url, SESSDATA);
 
             const handler = {

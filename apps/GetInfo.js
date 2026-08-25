@@ -104,7 +104,7 @@ export class Biliinfo extends plugin {
         }
 
         if (forwardNodes.length === 1) {
-            e.reply([forwardNodes[0].message, new Button().info()], true)
+            try { await e.reply([forwardNodes[0].message, new Button().info()], true) } catch { await e.reply(forwardNodes[0].message) }
         } else {
             const forwardMessage = await Bot.makeForwardMsg(forwardNodes);
             e.reply([forwardMessage, new Button().info()], false);

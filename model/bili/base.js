@@ -65,7 +65,7 @@ export default {
         this.saveConfig(configFilePath);
     },
 
-    clean: async (e) => {
+    async clean(e) {
         let qq
         const cached = await redis.get('bili:lists')
         if (cached) {
