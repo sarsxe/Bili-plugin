@@ -9,7 +9,39 @@ import path from "path";
 import lodash from "lodash";
 import { exec } from "child_process";
 import net from "net";
+let visitorCookieCache = null
+let visitorCookieExpire = 0
 
+async function getVisitorCookie() {
+    const now = Date.now()
+    if (visitorCookieCache && visitorCookieExpire > now) return visitorCookieCache
+    try {
+        const resp = await fetch('https://api.bilibili.com/x/frontend/finger/spi', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36',
+                Referer: 'https://www.bilibili.com'
+            },
+            timeout: 8000
+        })
+        const contentType = resp.headers.get('content-type') || ''
+        if (!resp.ok || !contentType.includes('application/json')) {
+            throw new Error('获取访客Cookie失败: HTTP ' + resp.status)
+        }
+        const json = await resp.json()
+        const b3 = json?.data?.b_3
+        const b4 = json?.data?.b_4
+        if (!b3 || !b4) throw new Error('获取访客Cookie失败: 响应缺少 buvid3/buvid4')
+        const cookie = 'buvid3=' + b3 + '; buvid4=' + b4 + '; b_nut=' + Math.floor(now / 1000)
+        visitorCookieCache = cookie
+        visitorCookieExpire = now + 6 * 60 * 60 * 1000
+        return cookie
+    } catch (error) {
+        logger.warn('[Bili-plugin] 获取访客Cookie失败，将不带Cookie请求: ' + error.message)
+        visitorCookieCache = null
+        visitorCookieExpire = now + 10 * 60 * 1000
+        return ''
+    }
+}
 export default {
     async getSourceMessage(e) {
         if (e.getReply) {
@@ -73,11 +105,21 @@ export default {
             Accept: '*/*',
             'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8'
         };
-        if (cookies && /^[A-Za-z0-9,._%+\-\/=*]+$/.test(cookies))
-            headers.Cookie = `SESSDATA=${cookies}`;
+        if (cookies && /^[A-Za-z0-9,._%+\-\/=*]+$/.test(cookies)) {
+            headers.Cookie = 'SESSDATA=' + cookies;
+        } else {
+            const visitorCookie = await getVisitorCookie();
+            if (visitorCookie) headers.Cookie = visitorCookie;
+        }
 
         const apiGet = async (api) => {
             const resp = await fetch(api, { headers });
+            const contentType = resp.headers.get('content-type') || '';
+            if (!resp.ok || !contentType.includes('application/json')) {
+                const body = await resp.text();
+                const preview = body.replace(/\s+/g, ' ').slice(0, 200);
+                throw new Error('B站视频API返回异常: HTTP ' + resp.status + ' ' + contentType + '，可能触发风控，请检查SESSDATA、访客Cookie或代理；响应预览: ' + preview);
+            }
             const json = await resp.json();
             if (json.code !== 0) throw new Error(`B站API错误: ${json.code} ${json.message}`);
             return json.data;

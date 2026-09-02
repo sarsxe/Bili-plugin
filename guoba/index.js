@@ -64,7 +64,7 @@ export function supportGuoba() {
           label: '视频大小上限',
           bottomHelpMessage: '单位：MB，超过此大小的视频不发送',
           component: 'InputNumber',
-          componentProps: { min: 1, max: 200, placeholder: '15' }
+          componentProps: { min: 1, max: 200, placeholder: '75' }
         },
         { label: '定时任务', component: 'SOFT_GROUP_BEGIN' },
         {
