@@ -70,7 +70,7 @@ export class Bililogin extends plugin {
                     return true
                 }
             }
-            try { await e.reply(['登录超时显类后同唎杔测小', new Button().bind()], true) } catch { await e.reply(['登录超时显类后同唎杔测小', new Button().bind()]) }
+            try { await e.reply(['登录超时，请稍后重新尝试', new Button().bind()], true) } catch { await e.reply(['登录超时，请稍后重新尝试', new Button().bind()]) }
             Running[e.user_id] = false
             return true
         } catch (error) {
