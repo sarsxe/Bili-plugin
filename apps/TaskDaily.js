@@ -3,6 +3,8 @@ import {
     Bili as Bili
 } from "#model"
 import moment from 'moment';
+import durationPlugin from 'moment/plugin/duration.js';
+moment.extend(durationPlugin);
 import common from '../../../lib/common/common.js'
 
 export class BiliTaskDaily extends plugin {
