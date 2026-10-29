@@ -15,7 +15,7 @@ export class Biliupdate extends plugin {
       priority: Number.MIN_SAFE_INTEGER,
       rule: [
         {
-          reg: `^#*(哔站|${pluginName})(插件)?(强制)?更新$|^#*(强制)?(哔站|${pluginName})更新(插件)?$`,
+          reg: `^#*(哔站|B站|b站|${pluginName})(插件)?(强制)?更新$|^#*(强制)?(哔站|B站|b站|${pluginName})更新(插件)?$`,
           fnc: "update"
         },
         {
