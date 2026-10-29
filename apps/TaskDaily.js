@@ -3,7 +3,7 @@ import {
     Bili as Bili
 } from "#model"
 import moment from 'moment';
-import durationPlugin from 'moment/plugin/duration.js';
+import durationPlugin from 'dayjs/plugin/duration.js';
 moment.extend(durationPlugin);
 import common from '../../../lib/common/common.js'
 
